@@ -9,4 +9,4 @@ run ```run.sh```
 run ```run.cmd```
 # Todo:
 write run.sh\
-write run.cmd\
+write run.cmd
