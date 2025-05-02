@@ -1,14 +1,10 @@
 services:
 
   db:
-    image: postgres
+    build: ./Postgres
     container_name: db
     restart: always
     shm_size: 128mb
-    environment:
-      POSTGRES_USER: wadmin
-      POSTGRES_PASSWORD: PosTR45#^DBphIII*
-      POSTGRES_DB: Databases-Project
     volumes:
       - ./DB:/var/lib/postgresql/data
 
@@ -19,7 +15,7 @@ services:
     ports:
       - 8080:8080
   app:
-    build: .
+    build: ./Flask
     container_name: flask
     restart: always
     environment:

@@ -19,18 +19,6 @@ CREATE TABLE Friend (
     FOREIGN KEY (followed_user_id) REFERENCES "User"(id) ON DELETE CASCADE
 );
 
-DROP TABLE IF EXISTS Run CASCADE;
-CREATE TABLE Run (
-    id SERIAL NOT NULL,
-    user_id int NOT NULL,
-    level_id int NOT NULL,
-    score int,
-    run_time INTERVAL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE,
-    FOREIGN KEY (level_id) REFERENCES Level(id) ON DELETE CASCADE
-);
-
 DROP TABLE IF EXISTS World CASCADE;
 CREATE TABLE World (
     id int PRIMARY KEY,
@@ -49,6 +37,18 @@ CREATE TABLE Level (
     coins int,
     PRIMARY KEY (id),
     FOREIGN KEY (world_id) REFERENCES World(id)
+);
+
+DROP TABLE IF EXISTS Run CASCADE;
+CREATE TABLE Run (
+    id SERIAL NOT NULL,
+    user_id int NOT NULL,
+    level_id int NOT NULL,
+    score int,
+    run_time INTERVAL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE,
+    FOREIGN KEY (level_id) REFERENCES Level(id) ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS Monster CASCADE;
@@ -87,3 +87,4 @@ CREATE TABLE Flyer (
     fly_direction int,
     FOREIGN KEY (monster_id) REFERENCES Monster(id)
 )
+
