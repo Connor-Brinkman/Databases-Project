@@ -1,0 +1,1 @@
+SELECT (id) FROM "User" WHERE email = %s AND password = %s;

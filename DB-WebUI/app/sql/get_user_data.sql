@@ -1,0 +1,1 @@
+SELECT (u.nickname, u.email, u.registration_date) FROM "User" AS u WHERE u.id = %s

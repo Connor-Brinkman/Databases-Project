@@ -1,0 +1,1 @@
+INSERT INTO "User" (email, password, nickname, registration_date) VALUES (%s, %s, %s, %s)
