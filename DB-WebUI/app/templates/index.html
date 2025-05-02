@@ -71,7 +71,7 @@
 
     <script>
         document.getElementById('deleteUser').addEventListener('click', function() {
-            fetch('/deleteUser')
+            fetch('/bridge/deleteUser')
             .then(response => {
                 if (response.ok) {
                     window.location.href = '/'

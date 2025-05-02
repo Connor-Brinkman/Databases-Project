@@ -66,6 +66,9 @@ def query_sql(filename, params, fetch=False): #executes an sql query given a fil
             results = cursor.fetchall()  # Directly fetch all rows
             cursor.close()
             results_list = [[item for item in row] for row in results]
+
+            if results_list is None:
+                return None
             if str(results_list[0][0]).startswith('('):
                 results_list = [[item[1:-1].split(',') for item in row] for row in results_list]
             return results_list
@@ -121,7 +124,7 @@ def create_account():
     try:
         query_sql("sql/add_account.sql", (email, password, nickname, current_date))
     except pg.Error as e:
-        return jsonify({'message': f'An error has occured: {e}'}), 500
+        return jsonify({'message': f'An error has occured: {e}'}), 400
 
     return jsonify({'message': 'Account created successfully.'}), 201
 
@@ -132,6 +135,8 @@ def login_to_account():
     password = data.get('password')
 
     login_query = query_sql("sql/login.sql", (email, password), fetch = True)
+    if login_query is None:
+        return jsonify({'message': 'Password or Email is incorrect.'}), 400
 
     resp = make_response(jsonify({'message': 'success'}), 201) 
     resp.set_cookie('UserID', f'{login_query[0][0]}')
@@ -148,16 +153,18 @@ def get_user_data():
     getUserQuery = query_sql("sql/get_user_data.sql", (user_cookie), True)
     return getUserQuery, 201
 
-@app.route('/bridge/delete_user') #delete user
+@app.route('/bridge/deleteUser') #delete user
 def delete_user():
     user_cookie = request.cookies.get('UserID') #get cookie
 
     deleteQuery = query_sql("sql/delete_user.sql", user_cookie) #delete user using cookie
 
-    del_resp = make_request(jsonify({'message': 'delete user cookie'}, 201))
+    del_resp = make_response(jsonify({'message': 'delete user cookie'}), 201)
     del_resp.delete_cookie
 
     return del_resp
+
+
     
 
 
