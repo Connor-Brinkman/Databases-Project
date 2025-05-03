@@ -9,7 +9,7 @@ app.config['DATABASE'] = {
     'port': 5432,
     'database': 'Databases-Project',
     'user': 'wadmin',
-    'password': 'PosTR45#^DBphIII*',
+    'password': 'Pass#123',
 }
 
 
@@ -163,6 +163,29 @@ def delete_user():
     del_resp.delete_cookie
 
     return del_resp
+
+@app.route('/bridge/upload_run', methods=['POST'])
+def upload_run():
+    data = request.get_json()
+    user_id = data.get('user_id')
+    level_id = data.get('level_id')
+    score = data.get('score')
+    run_time = data.get('run_time')
+
+    """
+    todo get ts math in order for the runtime
+    """
+    query_sql('sql/addrun.sql', (user_id, level_id, score, run_time))
+
+@app.route('/bridge/login_game', methods=['POST'])
+def login_game():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+
+    login_query = query_sql('sql/login.sql', (email,password), True)
+
+    return jsonify({'message': f'{login_query[0][0]}'}), 201
 
 
     
