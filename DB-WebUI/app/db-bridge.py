@@ -150,7 +150,7 @@ def get_user_data():
     if user_cookie is None:
         return redirect('/')
     
-    getUserQuery = query_sql("sql/get_user_data.sql", (user_cookie), True)
+    getUserQuery = query_sql("sql/get_user_data.sql", (user_cookie,), True)
     return getUserQuery, 201
 
 @app.route('/bridge/deleteUser') #delete user
@@ -164,7 +164,7 @@ def delete_user():
 
     return del_resp
 
-@app.route('/bridge/upload_run', methods=['POST'])
+@app.route('/bridge/upload_run', methods=['POST']) #upload a run to the database
 def upload_run():
     data = request.get_json()
     user_id = data.get('user_id')
@@ -175,9 +175,9 @@ def upload_run():
     """
     todo get ts math in order for the runtime
     """
-    query_sql('sql/addrun.sql', (user_id, level_id, score, run_time))
+    query_sql('sql/addrun.sql', (user_id, level_id, score, run_time)) 
 
-@app.route('/bridge/login_game', methods=['POST'])
+@app.route('/bridge/login_game', methods=['POST']) #login to the database in the format that the game wants and not the website
 def login_game():
     data = request.get_json()
     email = data.get('email')
@@ -186,6 +186,21 @@ def login_game():
     login_query = query_sql('sql/login.sql', (email,password), True)
 
     return jsonify({'message': f'{login_query[0][0]}'}), 201
+
+@app.route('/bridge/query_friends') #query a list of friends that the user has
+def query_friends():
+    user_cookie = request.cookies.get('UserID')
+
+    if user_cookie is None:
+        return redirect('/')
+    try:
+        friendQuery = query_sql('sql/query_friends.sql', (user_cookie,), True)
+        return friendQuery, 201
+    except IndexError:
+        return jsonify({'error': 'Lack of Friends', 'details': 'No Friends to display, how sad.'}), 500
+    
+
+   
 
 
     
