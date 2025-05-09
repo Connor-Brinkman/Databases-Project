@@ -1,5 +1,5 @@
 import psycopg2 as pg
-from flask import Flask, request, jsonify, g, current_app, render_template, redirect, make_response
+from flask import Flask, request, jsonify, g, current_app, render_template, redirect, make_response, session
 from datetime import date
 import bcrypt
 
@@ -11,6 +11,8 @@ app.config['DATABASE'] = {
     'user': 'wadmin',
     'password': 'Pass#123',
 }
+
+app.secret_key = "wireuoiweruiuwer"
 
 
 """
@@ -109,6 +111,7 @@ def logoutUser():
     del_resp.delete_cookie('UserID')
     return del_resp
 
+
 """
 bridge from HTML to the DATABASE
 Below this comment is all functions that involve interacting with the database
@@ -199,6 +202,18 @@ def query_friends():
     except IndexError:
         return jsonify({'error': 'Lack of Friends', 'details': 'No Friends to display, how sad.'}), 500
     
+@app.route('/bridge/search_users', methods=["POST"])
+def search_users():
+    data = request.get_json()
+    query = data.get('query')
+
+    try:
+        user_query = query_sql('sql/search_users.sql', (query,), True)
+        return user_query, 201
+    except IndexError:
+        return jsonify({'error': 'No User', 'details': 'no users were found.'}), 500
+
+
 
    
 

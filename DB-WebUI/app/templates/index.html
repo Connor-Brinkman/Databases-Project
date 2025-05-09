@@ -4,6 +4,15 @@
         <title>User Data</title>
     </head>
     <body>
+        <form id="searchForm">
+            <input type="text" id="searchQuery" name="searchQuery" placeholder="Search for Username">
+            <button id="search" type="submit">Search</button>
+        </form>
+
+        <table id = "searchTable">
+            
+        </table>
+
         <table id = "userDataTable">
             <thead>
                 <th>Nickname</th>
@@ -14,6 +23,7 @@
                 
             </tbody>
         </table>
+
         <table id = "friendList">
             <thead>
                 <th>Friends List</th>
@@ -22,8 +32,10 @@
                 
             </tbody>
         </table>
+
         <button id = "logout" type = 'click'>Logout</button>
         <button id = 'deleteUser' type =  'submit'>Delete User</button>
+
     </body>
     <script>
         // Table Variables
@@ -85,7 +97,7 @@
 
         })
         .catch(error => {
-            friendTable.innerHTML = `<tr><td colspan='100%' style='color:red;'>Error fetching data: ${error.status}</td></tr>`
+            friendTable.innerHTML = `<tr><td colspan='100%' style='color:red;'>Error fetching data: ${error}</td></tr>`
         })
 
     </script>
@@ -114,6 +126,36 @@
                 else {
                     alert('An error has occured! Please try again later.')
                 }
+            })
+        })
+    </script>
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function() {
+            event.preventDefault();
+
+            const searchQuery = document.getElementById('searchQuery').value;
+
+            if (!searchQuery) {
+                alert('You need to enter a search term');
+            }
+
+            const data = {
+                query: searchQuery,
+            }
+
+            fetch('/bridge/search_users', {
+                method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(data),
+            })
+            .then(data => {
+
+            })
+            .catch(error => {
+                alert('Username not found');
+                window.location.href = '/';
             })
         })
     </script>
