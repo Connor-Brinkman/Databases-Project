@@ -264,7 +264,23 @@ def level_summary():
     except Exception as e:
         return jsonify({'error': 'Query failed', 'details': str(e)}), 500
     
+@app.route('/bridge/query_user', methods=['POST'])
+def query_user():
+    data = request.get_json()
+    user = data.get('query')
 
+    try:
+        result = query_sql('sql/listusers.sql', (user,), fetch=True)
+        if result:
+            row = result[0]
+            return jsonify({
+                'nickname': row[0],
+                'registration_date': row[1]
+            }), 201
+        else:
+            return jsonify({'error': 'No user found'}), 404
+    except:
+        return jsonify({'error': 'Query failed'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Users</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        #search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            width: 250px;
+        }
+
+        button {
+            padding: 10px 14px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+        }
+
+        #search-button {
+            background-color: #007bff;
+            color: white;
+        }
+
+        #user-display {
+            width: 90%;
+            max-width: 600px;
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .info {
+            margin-bottom: 20px;
+        }
+
+        .actions button {
+            margin: 0 10px;
+            font-size: 14px;
+        }
+
+        .add-btn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .remove-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Find a User</h1>
+
+    <div id="search-container">
+        <input type="text" id="search-input" placeholder="Enter nickname or ID">
+        <button id="search-button">Search</button>
+    </div>
+
+    <div id="user-display">
+        <div class="info">
+            <p><strong>Nickname:</strong> <span id="nickname"></span></p>
+            <p><strong>Registered:</strong> <span id="registered"></span></p>
+        </div>
+        <div class="actions">
+            <button class="add-btn" id="add-button">Add Friend</button>
+            <button class="remove-btn" id="remove-button">Remove Friend</button>
+        </div>
+    </div>
+
+    <script>
+        let currentUserId = null;
+
+        document.getElementById("search-button").addEventListener("click", function() {
+            const query = document.getElementById("search-input").value.trim();
+            if (!query) return alert("Please enter a nickname or ID.");
+
+            fetch('/bridge/query_user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data || !data.id) {
+                    alert("User not found.");
+                    document.getElementById("user-display").style.display = "none";
+                    return;
+                }
+
+                currentUserId = data.id;
+                document.getElementById("nickname").textContent = data.nickname;
+                document.getElementById("registered").textContent = data.registered;
+                document.getElementById("user-display").style.display = "flex";
+            })
+            .catch(err => {
+                console.error("Search error:", err);
+                alert("An error occurred while searching.");
+            });
+        });
+
+        document.getElementById("add-button").addEventListener("click", function() {
+            if (!currentUserId) return;
+            fetch('/bridge/search_users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: currentUserId })
+            })
+            .then(res => res.json())
+            .then(data => alert(data.message || "Friend added!"))
+            .catch(err => console.error("Add friend error:", err));
+        });
+
+        document.getElementById("remove-button").addEventListener("click", function() {
+            if (!currentUserId) return;
+            fetch('/bridge/removeFriend', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: currentUserId })
+            })
+            .then(res => res.json())
+            .then(data => alert(data.message || "Friend removed!"))
+            .catch(err => console.error("Remove friend error:", err));
+        });
+    </script>
+
+</body>
+</html>
