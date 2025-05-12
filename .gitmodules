@@ -1,3 +1,4 @@
 [submodule "TerraDash"]
 	path = TerraDash
 	url = https://github.com/jdtgz/TerraDash.git
+	branch = master
