@@ -1,87 +1,168 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>
-            Create Account
-        </title>
-    </head>
-    
-    <body>
-        <header>
-            Create Account
-        </header>
-        <form id="createAccForm">
-            <div>
-              <label for="nickname">Nickname:</label>
-              <input type="text" id="nickname" name="nickname">
-            </div>
-            <br>
-            <div>
-              <label for="email">Email:</label>
-              <input type="text" id="email" name="email">
-            </div>
-            <br>
-            <div>
-              <label for="password">Password:</label>
-              <input type="password" id="password" name="password">
-            </div>
-             <br>
-            <div>
-              <label for="repeatPassword">Repeat Password:</label>
-              <input type="password" id="repeatPassword" name="repeatPassword">
-            </div>
-            <br>
-            <button type="submit">Create Account</button>
-          </form>
+<head>
+    <title>Create Account</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8; /* Light background */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
 
-        <script>
-          document.getElementById('createAccForm').addEventListener('submit', function(event) {
-              event.preventDefault();
+        header {
+            text-align: center;
+            padding: 25px;
+            background-color: #6a1b9a; /* Deep purple */
+            color: white;
+            border-radius: 0; /* No border radius for header */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
 
-              const nickname = document.getElementById('nickname').value;
-              const email = document.getElementById('email').value;
-              const password = document.getElementById('password').value;
-              const repeatPassword = document.getElementById('repeatPassword').value;
+        form {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px; /* Slightly more rounded corners */
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15); /* Stronger shadow */
+            width: 100%;
+            max-width: 450px; /* Slightly wider form */
+        }
 
-              if (!nickname || !email || !password || !repeatPassword) {
-                  alert('Please fill in all fields.');
-                  return;
-              }
+        div {
+            margin-bottom: 20px; /* Increased spacing */
+        }
 
-              if (password !== repeatPassword) {
-                  alert('Passwords do not match.');
-                  return;
-              }
+        label {
+            display: block;
+            margin-bottom: 8px; /* Increased spacing */
+            color: #2c3e50; /* Darker text */
+            font-weight: 500;
+        }
 
-              const data = {
-                  nickname: nickname,
-                  email: email,
-                  password: password,
-              };
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px; /* Slightly increased padding */
+            border: 1px solid #e0e0e0; /* Lighter border */
+            border-radius: 6px;
+            box-sizing: border-box;
+            transition: all 0.3s ease; /* Smooth transition */
+            font-size: 16px; /* Increased font size */
+        }
 
-              fetch('/bridge/create_account', {
-                  method: 'POST',
-                  headers: {
-                      'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify(data),
-              })
-              .then(response => {
-                  if (!response.ok) {
-                      throw new Error(`HTTP error! status: ${response.status}`);
-                  }
-                  return response.json();
-              })
-              .then(responseData => {
-                  console.log('Success:', responseData);
-                  alert('Account created successfully!');
-                  window.location.href = "/";
-              })
-              .catch(error => {
-                  console.error('Error:', error);
-                  alert(`Failed to create account. ${error}`);
-              });
-          });
-        </script>
-    </body>
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #9c27b0; /* Vibrant purple focus */
+            outline: none;
+            box-shadow: 0 0 5px rgba(156, 39, 176, 0.3); /* Added shadow on focus */
+        }
+
+        button {
+            background-color: #9c27b0; /* Vibrant purple */
+            color: white;
+            padding: 12px 25px; /* Increased horizontal padding */
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease; /* Smooth transition */
+            font-size: 18px; /* Increased font size */
+            font-weight: 500;
+        }
+
+        button:hover {
+            background-color: #7b1fa2; /* Darker purple on hover */
+            transform: translateY(-2px); /* Slight lift on hover */
+        }
+
+        @media (max-width: 600px) {
+            form {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        Create Account
+    </header>
+    <form id="createAccForm">
+        <div>
+            <label for="nickname">Nickname:</label>
+            <input type="text" id="nickname" name="nickname">
+        </div>
+        <br>
+        <div>
+            <label for="email">Email:</label>
+            <input type="text" id="email" name="email">
+        </div>
+        <br>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password">
+        </div>
+        <br>
+        <div>
+            <label for="repeatPassword">Repeat Password:</label>
+            <input type="password" id="repeatPassword" name="repeatPassword">
+        </div>
+        <br>
+        <button type="submit">Create Account</button>
+    </form>
+
+    <script>
+        document.getElementById('createAccForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const nickname = document.getElementById('nickname').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const repeatPassword = document.getElementById('repeatPassword').value;
+
+            if (!nickname || !email || !password || !repeatPassword) {
+                alert('Please fill in all fields.');
+                return;
+            }
+
+            if (password !== repeatPassword) {
+                alert('Passwords do not match.');
+                return;
+            }
+
+            const data = {
+                nickname: nickname,
+                email: email,
+                password: password,
+            };
+
+            fetch('/bridge/create_account', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(responseData => {
+                    console.log('Success:', responseData);
+                    alert('Account created successfully!');
+                    window.location.href = "/";
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert(`Failed to create account. ${error}`);
+                });
+        });
+    </script>
+</body>
 </html>

@@ -1,34 +1,143 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Leaderboard</title>
-    </head>
-    <body>
-        <form id="chooselevel">
-            <label for="level">Choose a level:</label>
-            <select name="level_id" id="level">
-                <option value="1">Level 1</option>
-                <option value="2">Level 2</option>
-                <option value="3">Level 3</option>
-            </select>
-            <button id="search" type="submit">Search</button>
-        </form>
+<head>
+    <title>Leaderboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
 
-        <table id="leaderboard">
-            <thead>
+        form#chooselevel {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 450px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        form#chooselevel label {
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        form#chooselevel select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        form#chooselevel select:focus {
+            border-color: #9c27b0;
+            outline: none;
+            box-shadow: 0 0 5px rgba(156, 39, 176, 0.3);
+        }
+
+        form#chooselevel button {
+            background-color: #9c27b0;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        form#chooselevel button:hover {
+            background-color: #7b1fa2;
+            transform: translateY(-2px);
+        }
+
+        table#leaderboard {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+            margin-bottom: 20px;
+            max-width: 800px;
+        }
+
+        table#leaderboard th,
+        table#leaderboard td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        table#leaderboard th {
+            background-color: #f0f4f8;
+            color: #2c3e50;
+        }
+
+        table#leaderboard tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        @media (max-width: 600px) {
+            form#chooselevel,
+            table#leaderboard {
+                padding: 20px;
+            }
+
+            table#leaderboard th,
+            table#leaderboard td {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Leaderboard</h1>
+    </header>
+    <form id="chooselevel">
+        <label for="level">Choose a level:</label>
+        <select name="level_id" id="level">
+            <option value="1">Level 1</option>
+            <option value="2">Level 2</option>
+            <option value="3">Level 3</option>
+        </select>
+        <button id="search" type="submit">Search</button>
+    </form>
+
+    <table id="leaderboard">
+        <thead>
+            <tr>
                 <th>User</th>
                 <th>Score</th>
                 <th>Run time</th>
-            </thead>
-            <tbody>
-                
-            </tbody>
-        </table>
-
-    </body>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
 
     <script>
-        document.getElementById('chooselevel').addEventListener('submit', function() {
+        document.getElementById('chooselevel').addEventListener('submit', function () {
             event.preventDefault();
 
             const levelid = document.getElementById('level').value;
@@ -44,42 +153,53 @@
                 },
                 body: JSON.stringify(data)
             })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(err => {  // Parse JSON error message
-                        throw new Error(err.detail || 'Failed to fetch leaderboard data'); //use error.detail if available
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                leaderboard.innerHTML = `<thead>
-                    <th>User</th>
-                    <th>Score</th>
-                    <th>Run time</th>
-                    </thead>
-                    <tbody>
-                
-                    </tbody>`
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => {  // Parse JSON error message
+                            throw new Error(err.detail || 'Failed to fetch leaderboard data'); //use error.detail if available
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const leaderboardTable = document.getElementById('leaderboard');
+                    leaderboard.innerHTML = `
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Score</th>
+                                <th>Run time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>`;
+                    const leaderboardTableBody = leaderboard.querySelector('tbody');
 
-                if (data.length === 0) {
-                leaderboard.innerHTML = "<tr><td colspan='100%'>No Data Available</td></tr>";
-                return;
-                }
 
-                for(var j = 0; j < 3; j++) {
-                    let row = leaderboard.insertRow()
-                    for(var i = 0; i < data.length; i++) {
-                        let cell = row.insertCell(i)
-                        cell.innerHTML = data[j][i]
-                    } 
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                leaderboardTableBody.innerHTML = `<tr><td colspan='100%' style='color:red;'>${error.message}</td></tr>`;
-                leaderboardTable.style.display = 'table';
-            });
-        })
+                    if (data.length === 0) {
+                        leaderboardTableBody.innerHTML = "<tr><td colspan='100%'>No Data Available</td></tr>";
+                        return;
+                    }
+
+                    for (let i = 0; i < data.length; i++) {
+                        let row = leaderboardTableBody.insertRow();
+                        let userCell = row.insertCell();
+                        let scoreCell = row.insertCell();
+                        let runTimeCell = row.insertCell();
+
+                        userCell.textContent = data[i][0];
+                        scoreCell.textContent = data[i][1];
+                        runTimeCell.textContent = data[i][2];
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const leaderboardTable = document.getElementById('leaderboard');
+                    const leaderboardTableBody = leaderboard.querySelector('tbody');
+                    leaderboardTableBody.innerHTML = `<tr><td colspan='100%' style='color:red;'>${error.message}</td></tr>`;
+                    leaderboardTable.style.display = 'table';
+                });
+        });
     </script>
+</body>
 </html>

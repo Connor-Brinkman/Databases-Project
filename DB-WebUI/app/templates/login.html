@@ -2,34 +2,134 @@
 <html>
 <head>
     <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column; /* Changed to column layout */
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        form {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 450px;
+            margin-bottom: 20px; /* Added margin-bottom */
+        }
+
+        div {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #9c27b0;
+            outline: none;
+            box-shadow: 0 0 5px rgba(156, 39, 176, 0.3);
+        }
+
+        button[type="submit"] {
+            background-color: #9c27b0;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #7b1fa2;
+            transform: translateY(-2px);
+        }
+
+        p {
+            margin-top: auto; /* Push paragraph to the bottom */
+            text-align: center;
+            color: #555;
+        }
+
+        a {
+            color: #9c27b0;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            form {
+                padding: 30px;
+            }
+        }
+    </style>
 </head>
 <body>
     <h1>Login</h1>
     <form id="loginForm">
         <div>
-          <label for="email">Email:</label>
-          <input type="text" id="email" name="email">
+            <label for="email">Email:</label>
+            <input type="text" id="email" name="email">
         </div>
         <br>
         <div>
-          <label for="password">Password:</label>
-          <input type="password" id="password" name="password">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password">
         </div>
         <br>
         <button type="submit">Login</button>
-      </form>
-      <p>
-        <a href="create_account">Need an account. Click Here!</a>
-      </p>
+    </form>
+    <p>
+        <a href="create_account">Need an account? Click here!</a>
+    </p>
 
     <script>
-        document.getElementById('loginForm').addEventListener("submit", function(event) {
+        document.getElementById('loginForm').addEventListener("submit", function (event) {
             event.preventDefault();
 
-            const email = document.getElementById('email').value 
+            const email = document.getElementById('email').value
             const password = document.getElementById('password').value
 
-            if(!email || !password) {
+            if (!email || !password) {
                 alert('Please fill in all fields.')
                 return;
             }
@@ -40,27 +140,27 @@
             }
 
             fetch('/bridge/login_to_account', {
-                  method: 'POST',
-                  headers: {
-                      'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify(data),
-              })
-              .then(response => {
-                  if (!response.ok) {
-                      throw new Error(`HTTP error! status: ${response.message}`);
-                  }
-                  return response.json();
-              })
-              .then(responseData => {
-                  console.log('Success:', responseData);
-                  window.location.href = '/'
-              })
-              .catch(error => {
-                  console.error('Error:', error);
-                  alert(`Username or Password is incorrect`);
-                  window.location.href = '/'
-              });
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.message}`);
+                    }
+                    return response.json();
+                })
+                .then(responseData => {
+                    console.log('Success:', responseData);
+                    window.location.href = '/'
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert(`Username or Password is incorrect`);
+                    window.location.href = '/'
+                });
 
         })
 
