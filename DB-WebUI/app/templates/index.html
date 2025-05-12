@@ -9,10 +9,6 @@
             <button id="search" type="submit">Search</button>
         </form>
 
-        <table id = "searchTable">
-            
-        </table>
-
         <table id = "userDataTable">
             <thead>
                 <th>Nickname</th>
@@ -77,7 +73,7 @@
         fetch('/bridge/query_friends')
         .then(response => {
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error(`HTTP error! status: ${response.details}`);
             }
             return response.json();
         })
@@ -150,11 +146,18 @@
                   },
                   body: JSON.stringify(data),
             })
-            .then(data => {
-
+            .then(response => {
+                if(!response.ok) {
+                    throw new Error(`${response.details}`)
+                    return response.json
+                }
+                else {
+                    alert('Friend Added Successfully')
+                    window.location.href = '/'
+                }
             })
             .catch(error => {
-                alert('Username not found');
+                alert(`No users found in database`);
                 window.location.href = '/';
             })
         })

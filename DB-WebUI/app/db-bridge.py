@@ -206,10 +206,11 @@ def query_friends():
 def search_users():
     data = request.get_json()
     query = data.get('query')
+    user_cookie = request.cookies.get('UserID')
 
     try:
-        user_query = query_sql('sql/search_users.sql', (query,), True)
-        return user_query, 201
+        user_query = query_sql('sql/addfriend.sql', (user_cookie, query))
+        return jsonify({'message': 'Friend Added Successfully'}), 201
     except IndexError:
         return jsonify({'error': 'No User', 'details': 'no users were found.'}), 500
 
