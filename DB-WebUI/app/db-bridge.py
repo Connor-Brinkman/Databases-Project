@@ -214,7 +214,16 @@ def search_users():
     except IndexError:
         return jsonify({'error': 'No User', 'details': 'no users were found.'}), 500
 
-
+@app.route('/bridge/leaderboard')
+def leaderboard():
+    data = request.get_json()
+    query = data.get()
+   
+    try:
+        user_query = query_sql('sql/leaderboard.sql', (query,), True)
+        return user_query, 201
+    except IndexError:
+        return jsonify({'error': 'No level', 'details': 'could not find level.'})
 
    
 

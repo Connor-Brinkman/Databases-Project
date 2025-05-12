@@ -23,4 +23,27 @@
         </table>
 
     </body>
+
+    <script>
+        document.getElementById('chooselevel').addEventListener('submit', function() {
+            event.preventDefault();
+
+            const levelid = document.getElementById('level').value;
+
+            const data = {
+                query: levelid
+            }
+
+            fetch('bridge/leaderboard', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(data => {
+
+            })
+        })
+    </script>
 </html>
