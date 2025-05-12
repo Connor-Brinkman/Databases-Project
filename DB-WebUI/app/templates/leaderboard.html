@@ -168,9 +168,9 @@
             .then(response => response.json())
             .then(stats => {
                 document.getElementById('stat-total-runs').textContent = stats.number_of_runs ?? 'N/A';
-                document.getElementById('stat-avg-score').textContent = stats.average_score?.toFixed(2) ?? 'N/A';
+                document.getElementById('stat-avg-score').textContent = stats.average_score ?? 'N/A';
                 document.getElementById('stat-max-score').textContent = stats.max_score ?? 'N/A';
-                document.getElementById('stat-avg-time').textContent = stats.average_time?.toFixed(2) ?? 'N/A';
+                document.getElementById('stat-avg-time').textContent = stats.average_time ?? 'N/A';
                 document.getElementById('stat-min-time').textContent = stats.min_time ?? 'N/A';
             })
             .catch(error => {
