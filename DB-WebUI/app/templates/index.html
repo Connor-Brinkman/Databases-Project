@@ -12,7 +12,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh; /* Changed height to min-height */
         }
 
         header {
@@ -23,6 +23,7 @@
             border-radius: 0;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             width: 100%;
+            box-sizing: border-box; /* Added box-sizing */
         }
 
         form {
@@ -33,6 +34,7 @@
             width: 100%;
             max-width: 450px;
             margin-bottom: 20px;
+            box-sizing: border-box; /* Added box-sizing */
         }
 
         div {
@@ -44,6 +46,7 @@
             margin-bottom: 8px;
             color: #2c3e50;
             font-weight: 500;
+            font-size: 16px;
         }
 
         input[type="text"],
@@ -64,7 +67,7 @@
             box-shadow: 0 0 5px rgba(156, 39, 176, 0.3);
         }
 
-        button {
+        button, #searchButton {
             background-color: #9c27b0;
             color: white;
             padding: 12px 25px;
@@ -75,9 +78,10 @@
             transition: all 0.3s ease;
             font-size: 18px;
             font-weight: 500;
+            box-sizing: border-box; /* Added box-sizing */
         }
 
-        button:hover {
+        button:hover, #searchButton:hover {
             background-color: #7b1fa2;
             transform: translateY(-2px);
         }
@@ -90,6 +94,7 @@
             border-radius: 12px;
             box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
             margin-bottom: 20px;
+            box-sizing: border-box; /* Added box-sizing */
         }
 
         th,
@@ -119,19 +124,39 @@
                 padding: 12px;
             }
         }
+
+        #logout,
+        #deleteUser,
+        #viewLeaderboard {
+            background-color: #9c27b0;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px 0;
+            width: 100%;
+            max-width: 450px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            font-size: 18px;
+            font-weight: 500;
+            box-sizing: border-box; /* Added box-sizing */
+        }
+
+        #logout:hover,
+        #deleteUser:hover,
+        #viewLeaderboard:hover {
+            background-color: #7b1fa2;
+            transform: translateY(-2px);
+        }
+
     </style>
 </head>
 <body>
     <header>
         User Data
     </header>
-    <form id="searchForm">
-        <div>
-            <label for="searchQuery">Search for Username:</label>
-            <input type="text" id="searchQuery" name="searchQuery" placeholder="Search for Username">
-        </div>
-        <button id="search" type="submit">Search</button>
-    </form>
+    <button id="searchButton" type="click">Search</button>
 
     <table id="userDataTable">
         <thead>
@@ -155,17 +180,11 @@
         </tbody>
     </table>
 
-    <form id="rmFriendForm">
-        <div>
-            <label for="rmFriend">Type Friend Name to remove:</label>
-            <input type="text" id="rmFriend" name="rmFriend" placeholder="Type Friend Name to remove">
-        </div>
-        <button id="rmFriendButton" type="submit">Remove Friend</button>
-    </form>
-
-    <button id="logout" type="click">Logout</button>
-    <button id="deleteUser" type="submit">Delete User</button>
-    <button id="viewLeaderboard" type="click">View LeaderBoard</button>
+    <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+        <button id="logout" type="click">Logout</button>
+        <button id="deleteUser" type="submit">Delete User</button>
+        <button id="viewLeaderboard" type="click">View LeaderBoard</button>
+    </div>
 
     <script>
         // Table Variables
@@ -186,7 +205,7 @@
                     return;
                 }
 
-                const actualData = data[0][0];  // Get the inner list
+                const actualData = data[0][0];
                 if (!actualData || actualData.length === 0) {
                     dataTable.innerHTML = "<tr><td colspan='100%'>No data available</td></tr>";
                     return;
@@ -260,42 +279,10 @@
         });
     </script>
     <script>
-        //Add Friend via Search
-        document.getElementById('searchForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-
-            const searchQuery = document.getElementById('searchQuery').value;
-
-            if (!searchQuery) {
-                alert('You need to enter a search term');
-            }
-
-            const data = {
-                query: searchQuery,
-            }
-
-            fetch('/bridge/search_users', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`${response.details}`)
-                        return response.json
-                    }
-                    else {
-                        alert('Friend Added Successfully');
-                        window.location.href = '/';
-                    }
-                })
-                .catch(error => {
-                    alert(`No users found in database`);
-                    window.location.href = '/';
-                })
-        });
+        //go to search page
+        document.getElementById('searchButton').addEventListener('click', function () {
+            window.location.href = "/search"
+        })
     </script>
 
     <script>
@@ -305,42 +292,5 @@
         })
     </script>
 
-    <script>
-        //remove friend
-        document.getElementById('rmFriendForm').addEventListener('submit', function (event) {
-            event.preventDefault()
-
-            const tempData = document.getElementById('rmFriend').value
-
-            if (!tempData) {
-                alert('You forgot to enter data');
-            }
-
-            const data = {
-                query: tempData,
-            }
-
-            fetch('/bridge/removeFriend', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            })
-                .then(response => {
-                    if (response.ok) {
-                        window.location.href = '/';
-                    }
-                    else {
-                        throw new Error(`${response.details}`)
-                        return response.json
-                    }
-                })
-                .catch(error => {
-                    alert(`No users found in database`);
-                    window.location.href = '/';
-                })
-        });
-    </script>
 </body>
 </html>
