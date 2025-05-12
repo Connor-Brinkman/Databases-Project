@@ -173,12 +173,15 @@ def upload_run():
     user_id = data.get('user_id')
     level_id = data.get('level_id')
     score = data.get('score')
-    run_time = data.get('run_time')
+    raw_run_time = data.get('run_time')
 
-    """
-    todo get ts math in order for the runtime
-    """
-    query_sql('sql/addrun.sql', (user_id, level_id, score, run_time)) 
+    run_time = f'{raw_run_time} seconds'
+
+    try:
+        add_run = query_sql('sql/addrun.sql', (user_id, level_id, score, run_time)) 
+        return add_run, 201
+    except IndexError:
+        return jsonify({'error': 'No run', 'details': 'Could not add the run'}), 500
 
 @app.route('/bridge/login_game', methods=['POST']) #login to the database in the format that the game wants and not the website
 def login_game():
@@ -223,7 +226,7 @@ def leaderboard():
         user_query = query_sql('sql/leaderboard.sql', (query,), True)
         return user_query, 201
     except IndexError:
-        return jsonify({'error': 'No level', 'details': 'could not find level.'})
+        return jsonify({'error': 'No level', 'details': 'could not find level.'}), 500
 
    
 
