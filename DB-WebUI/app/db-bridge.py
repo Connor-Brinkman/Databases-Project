@@ -111,6 +111,10 @@ def logoutUser():
     del_resp.delete_cookie('UserID')
     return del_resp
 
+@app.route('/leaderboard')
+def leaderboard_html():
+    return render_template('leaderboard.html')
+
 
 """
 bridge from HTML to the DATABASE
@@ -173,9 +177,7 @@ def upload_run():
     user_id = data.get('user_id')
     level_id = data.get('level_id')
     score = data.get('score')
-    raw_run_time = data.get('run_time')
-
-    run_time = f'{raw_run_time} seconds'
+    run_time = data.get('run_time')
 
     try:
         add_run = query_sql('sql/addrun.sql', (user_id, level_id, score, run_time)) 
@@ -217,10 +219,10 @@ def search_users():
     except IndexError:
         return jsonify({'error': 'No User', 'details': 'no users were found.'}), 500
 
-@app.route('/bridge/leaderboard')
+@app.route('/bridge/leaderboard', methods=['POST'])
 def leaderboard():
     data = request.get_json()
-    query = data.get()
+    query = data.get('query')
    
     try:
         user_query = query_sql('sql/leaderboard.sql', (query,), True)
@@ -228,7 +230,17 @@ def leaderboard():
     except IndexError:
         return jsonify({'error': 'No level', 'details': 'could not find level.'}), 500
 
-   
+@app.route('/bridge/removeFriend', methods=['POST'])
+def rmFriend():
+    data = request.get_json()
+    query = data.get('query')
+    user_cookie = request.cookies.get('UserID')
+
+    try:
+        user_query = query_sql('sql/removefriend.sql', (query, user_cookie,))
+        return jsonify({'message': 'Friend Added Successfully'}), 201
+    except IndexError:
+        return jsonify({'error': 'No User', 'details': 'no users were found.'}), 500
 
 
     

@@ -29,10 +29,18 @@
             </tbody>
         </table>
 
+        <form id='rmFriendForm'>
+            <input type="text" id="rmFriend" name="rmFriend" placeholder="Type Friend Name to remove">
+            <button id="rmFriendButton" type="submit">Remove Friend</button>
+        </form>
+
         <button id = "logout" type = 'click'>Logout</button>
         <button id = 'deleteUser' type =  'submit'>Delete User</button>
+        <button id = 'viewLeaderboard' type='click'>View LeaderBoard</button>
+
 
     </body>
+
     <script>
         // Table Variables
         const dataTable = document.getElementById('userDataTable');
@@ -99,6 +107,7 @@
     </script>
 
     <script>
+        //Logout of User
         document.getElementById('logout').addEventListener('click', function() {
             fetch('/logoutUser')
             .then(response => {
@@ -113,6 +122,7 @@
     </script>
 
     <script>
+        //Delete User from database
         document.getElementById('deleteUser').addEventListener('click', function() {
             fetch('/bridge/deleteUser')
             .then(response => {
@@ -126,6 +136,7 @@
         })
     </script>
     <script>
+        //Add Friend via Search
         document.getElementById('searchForm').addEventListener('submit', function() {
             event.preventDefault();
 
@@ -154,6 +165,51 @@
                 else {
                     alert('Friend Added Successfully')
                     window.location.href = '/'
+                }
+            })
+            .catch(error => {
+                alert(`No users found in database`);
+                window.location.href = '/';
+            })
+        })
+    </script>
+        
+    <script>
+        //switch to Leaderboard view
+        document.getElementById('viewLeaderboard').addEventListener('click', function() {
+            window.location.href = "/leaderboard"
+        })
+    </script>
+
+    <script>
+        //remove friend
+        document.getElementById('rmFriendForm').addEventListener('submit', function() {
+            event.preventDefault()
+
+            const tempData = document.getElementById('rmFriend').value
+
+            if (!tempData) {
+                alert('You forgot to enter data')
+            }
+
+            const data = {
+                query: tempData,
+            }
+
+            fetch('/bridge/removeFriend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/'
+                }
+                else {
+                    throw new Error(`${response.details}`)
+                    return response.json
                 }
             })
             .catch(error => {

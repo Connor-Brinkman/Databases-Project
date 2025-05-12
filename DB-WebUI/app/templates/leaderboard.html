@@ -20,6 +20,9 @@
                 <th>Score</th>
                 <th>Run time</th>
             </thead>
+            <tbody>
+                
+            </tbody>
         </table>
 
     </body>
@@ -41,9 +44,42 @@
                 },
                 body: JSON.stringify(data)
             })
-            .then(data => {
-
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {  // Parse JSON error message
+                        throw new Error(err.detail || 'Failed to fetch leaderboard data'); //use error.detail if available
+                    });
+                }
+                return response.json();
             })
+            .then(data => {
+                leaderboard.innerHTML = `<thead>
+                    <th>User</th>
+                    <th>Score</th>
+                    <th>Run time</th>
+                    </thead>
+                    <tbody>
+                
+                    </tbody>`
+
+                if (data.length === 0) {
+                leaderboard.innerHTML = "<tr><td colspan='100%'>No Data Available</td></tr>";
+                return;
+                }
+
+                for(var j = 0; j < 3; j++) {
+                    let row = leaderboard.insertRow()
+                    for(var i = 0; i < data.length; i++) {
+                        let cell = row.insertCell(i)
+                        cell.innerHTML = data[j][i]
+                    } 
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                leaderboardTableBody.innerHTML = `<tr><td colspan='100%' style='color:red;'>${error.message}</td></tr>`;
+                leaderboardTable.style.display = 'table';
+            });
         })
     </script>
 </html>
