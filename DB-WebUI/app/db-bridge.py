@@ -115,6 +115,10 @@ def logoutUser():
 def leaderboard_html():
     return render_template('leaderboard.html')
 
+@app.route('/search')
+def searchHTML():
+    return render_template('userprofile.html')
+
 
 """
 bridge from HTML to the DATABASE

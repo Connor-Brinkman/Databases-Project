@@ -3,68 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <title>Search Users</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f7f7f7;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
             margin: 0;
-            padding: 40px 20px;
+            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
 
         h1 {
-            color: #333;
+            color: #2c3e50;
             margin-bottom: 30px;
+            text-align: center;
         }
 
         #search-container {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             margin-bottom: 30px;
+            width: 100%;
+            max-width: 450px;
+            box-sizing: border-box;
         }
 
         input[type="text"] {
-            padding: 10px;
+            padding: 12px 15px;
             font-size: 16px;
             border-radius: 6px;
-            border: 1px solid #ccc;
-            width: 250px;
+            border: 1px solid #e0e0e0;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:focus {
+            border-color: #9c27b0;
+            outline: none;
+            box-shadow: 0 0 5px rgba(156, 39, 176, 0.3);
         }
 
         button {
-            padding: 10px 14px;
+            padding: 12px 25px;
             font-size: 16px;
             border-radius: 6px;
             border: none;
             cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            background-color: #9c27b0;
+            color: white;
+            box-sizing: border-box;
+        }
+
+        button:hover {
+            background-color: #7b1fa2;
+            transform: translateY(-2px);
         }
 
         #search-button {
-            background-color: #007bff;
+            background-color: #9c27b0;
             color: white;
         }
 
+        #search-button:hover {
+            background-color: #7b1fa2;
+        }
+
         #user-display {
-            width: 90%;
-            max-width: 600px;
+            width: 100%;
+            max-width: 450px;
             background-color: white;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
             padding: 20px;
             display: none;
             flex-direction: column;
             align-items: center;
+            margin-top: 20px;
+            box-sizing: border-box;
         }
 
         .info {
             margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .info p {
+            font-size: 16px;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        .info strong {
+            font-weight: 500;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            width: 100%;
+            margin-top: 10px;
         }
 
         .actions button {
-            margin: 0 10px;
-            font-size: 14px;
+            margin: 0;
+            font-size: 16px;
+            padding: 12px 25px;
+            border-radius: 6px;
         }
 
         .add-btn {
@@ -72,9 +124,37 @@
             color: white;
         }
 
+        .add-btn:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+
         .remove-btn {
             background-color: #dc3545;
             color: white;
+        }
+
+        .remove-btn:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 600px) {
+
+            #search-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .actions {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            input[type="text"],
+            button {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -99,7 +179,7 @@
     </div>
 
     <script>
-        let currentUserId = null;
+        let currentUserNickname = null;
 
         document.getElementById("search-button").addEventListener("click", function() {
             const query = document.getElementById("search-input").value.trim();
@@ -112,15 +192,15 @@
             })
             .then(res => res.json())
             .then(data => {
-                if (!data || !data.id) {
+                if (!data) {
                     alert("User not found.");
                     document.getElementById("user-display").style.display = "none";
                     return;
                 }
 
-                currentUserId = data.id;
+                currentUserNickname = data.nickname;
                 document.getElementById("nickname").textContent = data.nickname;
-                document.getElementById("registered").textContent = data.registered;
+                document.getElementById("registered").textContent = data.registration_date;
                 document.getElementById("user-display").style.display = "flex";
             })
             .catch(err => {
@@ -130,27 +210,48 @@
         });
 
         document.getElementById("add-button").addEventListener("click", function() {
-            if (!currentUserId) return;
             fetch('/bridge/search_users', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ query: currentUserId })
+                body: JSON.stringify({ query: currentUserNickname })
             })
-            .then(res => res.json())
-            .then(data => alert(data.message || "Friend added!"))
-            .catch(err => console.error("Add friend error:", err));
+            .then(res => {
+                if (res.ok) {
+                    alert("Friend Added Successfully")
+                    window.location.href = '/'
+                }
+                else {
+                    throw new Error("Friend Already Added")
+                    return res.json
+                }
+            })
+            .catch(err => {
+                alert(`${err}`)
+                window.location.href = '/search'
+            });
         });
 
         document.getElementById("remove-button").addEventListener("click", function() {
-            if (!currentUserId) return;
             fetch('/bridge/removeFriend', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ query: currentUserId })
+                body: JSON.stringify({ query: currentUserNickname })
             })
-            .then(res => res.json())
-            .then(data => alert(data.message || "Friend removed!"))
-            .catch(err => console.error("Remove friend error:", err));
+            .then(res => {
+                if (res.ok) {
+                    alert("Friend Removed Successfully")
+                    window.location.href = '/'
+                }
+                else {
+                    throw new Error("No valid friendship found")
+                    return res.json
+                }
+            })
+            .catch(err => {
+
+                alert(`${err}`)
+                window.location.href = '/search'
+            });
         });
     </script>
 

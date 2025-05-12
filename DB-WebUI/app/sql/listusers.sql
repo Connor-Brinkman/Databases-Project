@@ -1,3 +1,3 @@
 SELECT nickname, registration_date
-FROM User
+FROM "User"
 WHERE nickname = %s
