@@ -242,7 +242,27 @@ def rmFriend():
     except IndexError:
         return jsonify({'error': 'No User', 'details': 'no users were found.'}), 500
 
+@app.route('/bridge/level_summary', methods=['POST'])
+def level_summary():
+    data = request.get_json()
+    level_id = data.get('query')
 
+    try:
+        result = query_sql('sql/getrunstats.sql', (level_id,), fetch=True)
+        if result:
+            # Return the first row as a flat object
+            row = result[0]
+            return jsonify({
+                'number_of_runs': row[0],
+                'average_score': row[1],
+                'max_score': row[2],
+                'average_time': row[3],
+                'min_time': row[4]
+            }), 200
+        else:
+            return jsonify({'error': 'No data found'}), 404
+    except Exception as e:
+        return jsonify({'error': 'Query failed', 'details': str(e)}), 500
     
 
 

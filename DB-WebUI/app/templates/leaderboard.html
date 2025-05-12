@@ -1,127 +1,101 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Leaderboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f4f8;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f7f7f7;
             margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-        }
-
-        form#chooselevel {
-            background-color: white;
             padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-            width: 100%;
-            max-width: 450px;
-            margin-bottom: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        form#chooselevel label {
-            margin-bottom: 8px;
-            color: #2c3e50;
-            font-weight: 500;
-            font-size: 16px;
-        }
-
-        form#chooselevel select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-            font-size: 16px;
+        h1 {
+            color: #333;
             margin-bottom: 20px;
         }
 
-        form#chooselevel select:focus {
-            border-color: #9c27b0;
-            outline: none;
-            box-shadow: 0 0 5px rgba(156, 39, 176, 0.3);
+        form {
+            margin-bottom: 30px;
         }
 
-        form#chooselevel button {
-            background-color: #9c27b0;
-            color: white;
-            padding: 12px 25px;
+        label {
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            font-size: 14px;
+            width: 200px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+        }
+
+        input[type="submit"] {
+            padding: 8px 16px;
+            font-size: 14px;
             border: none;
-            border-radius: 6px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
             cursor: pointer;
-            width: 100%;
-            transition: all 0.3s ease;
-            font-size: 18px;
-            font-weight: 500;
         }
 
-        form#chooselevel button:hover {
-            background-color: #7b1fa2;
-            transform: translateY(-2px);
-        }
-
-        table#leaderboard {
-            width: 100%;
+        table {
             border-collapse: collapse;
-            margin-top: 20px;
-            background-color: white;
+            width: 90%;
+            max-width: 800px;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        thead {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        #level-stats {
+            max-width: 800px;
+            width: 100%;
+            margin-top: 30px;
+            padding: 20px;
+            background: white;
             border-radius: 12px;
             box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-            margin-bottom: 20px;
-            max-width: 800px;
         }
 
-        table#leaderboard th,
-        table#leaderboard td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
+        #level-stats h2 {
+            margin-top: 0;
         }
 
-        table#leaderboard th {
-            background-color: #f0f4f8;
-            color: #2c3e50;
-        }
-
-        table#leaderboard tbody tr:hover {
-            background-color: #f5f5f5;
-        }
-
-        @media (max-width: 600px) {
-            form#chooselevel,
-            table#leaderboard {
-                padding: 20px;
-            }
-
-            table#leaderboard th,
-            table#leaderboard td {
-                padding: 12px;
-            }
+        #level-stats p {
+            margin: 6px 0;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Leaderboard</h1>
-    </header>
-    <form id="chooselevel">
-        <label for="level">Choose a level:</label>
-        <select name="level_id" id="level">
-            <option value="1">Level 1</option>
-            <option value="2">Level 2</option>
-            <option value="3">Level 3</option>
-        </select>
-        <button id="search" type="submit">Search</button>
+    <h1>Leaderboard</h1>
+
+    <form id="queryForm">
+        <label for="query">Level ID:</label>
+        <input type="text" id="query" name="query" placeholder="Enter level ID" required>
+        <input type="submit" value="View Leaderboard">
     </form>
 
     <table id="leaderboard">
@@ -129,76 +103,80 @@
             <tr>
                 <th>User</th>
                 <th>Score</th>
-                <th>Run time</th>
+                <th>Run Time</th>
             </tr>
         </thead>
         <tbody>
+            <tr><td colspan="3" style="text-align:center;">Enter a Level ID to load data.</td></tr>
         </tbody>
     </table>
 
+    <div id="level-stats">
+        <h2>Level Statistics</h2>
+        <p><strong>Total Runs:</strong> <span id="stat-total-runs">-</span></p>
+        <p><strong>Average Score:</strong> <span id="stat-avg-score">-</span></p>
+        <p><strong>Max Score:</strong> <span id="stat-max-score">-</span></p>
+        <p><strong>Average Run Time:</strong> <span id="stat-avg-time">-</span></p>
+        <p><strong>Min Run Time:</strong> <span id="stat-min-time">-</span></p>
+    </div>
+
     <script>
-        document.getElementById('chooselevel').addEventListener('submit', function () {
+        const form = document.getElementById('queryForm');
+        const leaderboard = document.getElementById('leaderboard').getElementsByTagName('tbody')[0];
+
+        form.addEventListener('submit', function(event) {
             event.preventDefault();
+            const levelid = document.getElementById('query').value.trim();
 
-            const levelid = document.getElementById('level').value;
+            if (!levelid) return;
 
-            const data = {
-                query: levelid
-            }
-
+            // Leaderboard fetch
             fetch('bridge/leaderboard', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: levelid })
             })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => {  // Parse JSON error message
-                            throw new Error(err.detail || 'Failed to fetch leaderboard data'); //use error.detail if available
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const leaderboardTable = document.getElementById('leaderboard');
-                    leaderboard.innerHTML = `
-                        <thead>
-                            <tr>
-                                <th>User</th>
-                                <th>Score</th>
-                                <th>Run time</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>`;
-                    const leaderboardTableBody = leaderboard.querySelector('tbody');
+            .then(response => response.json())
+            .then(data => {
+                leaderboard.innerHTML = "";
+                if (!Array.isArray(data) || data.length === 0) {
+                    leaderboard.innerHTML = "<tr><td colspan='3' style='text-align:center;'>No data available for this level.</td></tr>";
+                    return;
+                }
 
-
-                    if (data.length === 0) {
-                        leaderboardTableBody.innerHTML = "<tr><td colspan='100%'>No Data Available</td></tr>";
-                        return;
-                    }
-
-                    for (let i = 0; i < data.length; i++) {
-                        let row = leaderboardTableBody.insertRow();
-                        let userCell = row.insertCell();
-                        let scoreCell = row.insertCell();
-                        let runTimeCell = row.insertCell();
-
-                        userCell.textContent = data[i][0];
-                        scoreCell.textContent = data[i][1];
-                        runTimeCell.textContent = data[i][2];
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    const leaderboardTable = document.getElementById('leaderboard');
-                    const leaderboardTableBody = leaderboard.querySelector('tbody');
-                    leaderboardTableBody.innerHTML = `<tr><td colspan='100%' style='color:red;'>${error.message}</td></tr>`;
-                    leaderboardTable.style.display = 'table';
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${row[0]}</td>
+                        <td>${row[1]}</td>
+                        <td>${row[2]}</td>
+                    `;
+                    leaderboard.appendChild(tr);
                 });
+            })
+            .catch(error => {
+                console.error("Leaderboard fetch error:", error);
+                leaderboard.innerHTML = "<tr><td colspan='3' style='text-align:center; color: red;'>Error loading leaderboard.</td></tr>";
+            });
+
+            // Summary stats fetch
+            fetch('bridge/level_summary', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: levelid })
+            })
+            .then(response => response.json())
+            .then(stats => {
+                document.getElementById('stat-total-runs').textContent = stats.number_of_runs ?? 'N/A';
+                document.getElementById('stat-avg-score').textContent = stats.average_score?.toFixed(2) ?? 'N/A';
+                document.getElementById('stat-max-score').textContent = stats.max_score ?? 'N/A';
+                document.getElementById('stat-avg-time').textContent = stats.average_time?.toFixed(2) ?? 'N/A';
+                document.getElementById('stat-min-time').textContent = stats.min_time ?? 'N/A';
+            })
+            .catch(error => {
+                console.error("Stats fetch error:", error);
+                document.getElementById('level-stats').innerHTML += `<p style="color:red;">Failed to load statistics.</p>`;
+            });
         });
     </script>
 </body>
